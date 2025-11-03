@@ -119,43 +119,385 @@ Paste the content of `gpt_actions.json` and replace the URL with your tunnel.
 
 ## API Reference
 **Base URL:** `http://localhost:8080/api`
-### File Operations
 ```json
-POST /api/read
-{"path": "/path/to/file.txt"}
-
-POST /api/write
-{"path": "/path/to/file.txt", "content": "file content", "is_base64": false}
-
-POST /api/delete
-{"path": "/path/to/file.txt"}
-```
-### Directory Operations
-```json
-POST /api/list
-{"path": "/path/to/directory", "recursive": false, "pattern": "*.py"}
-
-POST /api/tree
-{"path": "/path/to/directory", "max_depth": 3}
-```
-### Search
-```json
-POST /api/search
-{"path": "/path/to/directory", "text": "search term", "pattern": "*.txt"}
-
-POST /api/find
-{"path": "/path/to/directory", "pattern": "*.jpg"}
-```
-### Images
-```json
-POST /api/image
-{"path": "/path/to/image.jpg"}
-
-POST /api/image/base64
-{"path": "/path/to/image.jpg"}
-
-POST /api/images
-{"path": "/path/to/directory"}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MCP File Manager",
+    "description": "Complete file system operations with image support",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://attachment-gene-missed-yen.trycloudflare.com"
+    }
+  ],
+  "paths": {
+    "/api/read": {
+      "post": {
+        "operationId": "readFile",
+        "summary": "Read file content",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Full file path"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "default": "utf-8"
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/list": {
+      "post": {
+        "operationId": "listDirectory",
+        "summary": "List directory contents",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Directory path"
+                  },
+                  "recursive": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "File pattern (e.g. *.py)"
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/write": {
+      "post": {
+        "operationId": "writeFile",
+        "summary": "Write or create file",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "File path"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "File content (text or base64)"
+                  },
+                  "encoding": {
+                    "type": "string",
+                    "default": "utf-8"
+                  },
+                  "is_base64": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Set true for binary files (images)"
+                  }
+                },
+                "required": ["path", "content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "post": {
+        "operationId": "searchInFiles",
+        "summary": "Search text in files",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Directory to search"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "Text to search for"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "File pattern (e.g. *.txt)"
+                  }
+                },
+                "required": ["path", "text"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/find": {
+      "post": {
+        "operationId": "findFiles",
+        "summary": "Find files by pattern",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Directory to search"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "File pattern (e.g. *.jpg)"
+                  }
+                },
+                "required": ["path", "pattern"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/tree": {
+      "post": {
+        "operationId": "directoryTree",
+        "summary": "Get directory tree structure",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Directory path"
+                  },
+                  "max_depth": {
+                    "type": "integer",
+                    "default": 3
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/image": {
+      "post": {
+        "operationId": "getImage",
+        "summary": "Get image for GPT Vision",
+        "description": "Returns image with auto-compression",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Image file path"
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image file",
+            "content": {
+              "image/jpeg": {},
+              "image/png": {},
+              "image/gif": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/image/base64": {
+      "post": {
+        "operationId": "getImageBase64",
+        "summary": "Get image as base64",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Image file path"
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Base64 encoded image"
+          }
+        }
+      }
+    },
+    "/api/images": {
+      "post": {
+        "operationId": "listImages",
+        "summary": "List images in directory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Directory path"
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of images"
+          }
+        }
+      }
+    },
+    "/api/copy": {
+      "post": {
+        "operationId": "copyFile",
+        "summary": "Copy file",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "Source file path"
+                  },
+                  "destination": {
+                    "type": "string",
+                    "description": "Destination path"
+                  },
+                  "overwrite": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "required": ["source", "destination"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/delete": {
+      "post": {
+        "operationId": "deleteFile",
+        "summary": "Delete file",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "File path to delete"
+                  }
+                },
+                "required": ["path"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  }
+}
 ```
 ### Advanced
 ```json
